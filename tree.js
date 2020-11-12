@@ -107,6 +107,7 @@ function update(source) {
 }
 function click(d)
 {
+  d3.select("#the_SVG_ID").remove();
 
   var margin = {top: 20, right: 20, bottom: 70, left: 40},
   width = 600 - margin.left - margin.right,
@@ -132,6 +133,7 @@ var yAxis = d3.svg.axis()
 var svg = d3.select("body").append("svg")
   .attr("width", width + margin.left + margin.right)
   .attr("height", height + margin.top + margin.bottom)
+  .attr("id","the_SVG_ID")
 .append("g")
   .attr("transform", 
         "translate(" + margin.left + "," + margin.top + ")");
