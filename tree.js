@@ -1,19 +1,19 @@
 
 
 var data = [
-{"name" : "<=1.18" , "parent" : "null" , "coff" : [1,2,3,4,5]},
-{"name" : "<=0.89" , "parent" : "<=1.18" , "coff" : [1,2,3,4,5]},
-{"name" : "<=-0.0008" , "parent" : "<=1.18" , "coff" : [1,2,3,4,5]},
-{"name" : "<=-0.66" , "parent" : "<=0.89" , "coff" : [1,2,3,4,5]},
-{"name" : "<=1.07" , "parent" : "<=0.89" , "coff" : [1,2,3,4,5]}, 
-{"name" : "=62" , "parent" : "<=-0.0008" , "coff" : [1,2,3,4,5]},
-{"name" : "<=-0.77" , "parent" : "<=-0.0008" , "coff" : [1,2,3,4,5]},
-{"name" : "=27" , "parent" : "<=-0.66" , "coff" : [1,2,3,4,5]},
-{"name" : "=49" , "parent" : "<=-0.66" , "coff" : [1,2,3,4,5]},
-{"name" : "=10" , "parent" : "<=1.07" , "coff" : [1,2,3,4,5]},
-{"name" : "=78" , "parent" : "<=1.07" , "coff" : [1,2,3,4,5]},
-{"name" : "=11" , "parent" : "<=-0.77" , "coff" : [1,2,3,4,5]},
-{"name" : "=63" , "parent" : "<=-0.77" , "coff" : [9,2,4,2,1]}
+{"name" : "<=1.18" , "parent" : "null" , "coff" : [1,2,3,4,5],"info":"Info about the node"},
+{"name" : "<=0.89" , "parent" : "<=1.18" , "coff" : [1,2,3,4,5],"info":"Info about the node"},
+{"name" : "<=-0.0008" , "parent" : "<=1.18" , "coff" : [1,2,3,4,5],"info":"Info about the node"},
+{"name" : "<=-0.66" , "parent" : "<=0.89" , "coff" : [1,2,3,4,5],"info":"Info about the node"},
+{"name" : "<=1.07" , "parent" : "<=0.89" , "coff" : [1,2,3,4,5],"info":"Info about the node"}, 
+{"name" : "=62" , "parent" : "<=-0.0008" , "coff" : [1,2,3,4,5],"info":"Info about the node"},
+{"name" : "<=-0.77" , "parent" : "<=-0.0008" , "coff" : [1,2,3,4,5],"info":"Info about the node"},
+{"name" : "=27" , "parent" : "<=-0.66" , "coff" : [1,2,3,4,5],"info":"Info about the node"},
+{"name" : "=49" , "parent" : "<=-0.66" , "coff" : [1,2,3,4,5],"info":"Info about the node"},
+{"name" : "=10" , "parent" : "<=1.07" , "coff" : [1,2,3,4,5],"info":"Info about the node"},
+{"name" : "=78" , "parent" : "<=1.07" , "coff" : [1,2,3,4,5],"info":"Info about the node"},
+{"name" : "=11" , "parent" : "<=-0.77" , "coff" : [1,2,3,4,5],"info":"Info about the node"},
+{"name" : "=63" , "parent" : "<=-0.77" , "coff" : [9,2,4,2,1],"info":"Info about the node"}
 ];
 var  dataMap=data.reduce(function(map,node){
     map[node.name]=node;
@@ -36,7 +36,7 @@ data.forEach(function(node) {
 });
 
 // ************** Generate the tree diagram  *****************
-var margin = {top: 20, right: 100, bottom: 20, left: 50},
+var margin = {top: 20, right: 100, bottom: 20, left: 90},
  width = 660 - margin.right - margin.left,
  height = 500 - margin.top - margin.bottom;
  
@@ -53,6 +53,10 @@ var svg = d3.select("body").append("svg")
  .attr("height", height + margin.top + margin.bottom)
   .append("g")
  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+//  var div = d3.select("body").append("div")
+//   .attr("class","tootltip")
+//   .style("opacity",1e-6)
 
 root = treeData[0];
   
@@ -76,8 +80,10 @@ function update(source) {
   var nodeEnter = node.enter().append("g")
       .attr("class", "node")
       .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
-     .on("click", click);
-     
+      .on("click",click)
+      .on("mouseover",mouseover)
+      .on("mouseout",mouseout);
+      
 
   nodeEnter.append("rect")
       .attr("width", 10)
@@ -89,7 +95,13 @@ function update(source) {
       .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
       .attr("dy", ".35em")
       .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
-      .text(function(d) { return d.name; });
+      .text(function(d) { return d.name; })
+      // .on("mouseover", mouseover)
+      //       .on("mousemove", function(d){mousemove(d);})
+      //       .on("mouseout", mouseout)
+            
+     ;
+      
 
   //var bbox = text.node().getBBox();
 
@@ -105,11 +117,26 @@ function update(source) {
    .attr("d", diagonal);
 
 }
+function mouseover(d) {
+  d3.select(this).append("text")
+  .attr("class","hover")
+  .attr('transform',function(d){
+    return 'translate(-100, -10)';
+  })
+  .text(d.info);
+ 
+}
+
+function mouseout(d) {
+  d3.select(this).select("text.hover").remove();
+}
+
+
 function click(d)
 {
   d3.select("#the_SVG_ID").remove();
 
-  var margin = {top: 20, right: 20, bottom: 70, left: 40},
+  var margin = {top: 20, right: 20, bottom: 70, left: 80},
   width = 600 - margin.left - margin.right,
   height = 300 - margin.top - margin.bottom;
 
